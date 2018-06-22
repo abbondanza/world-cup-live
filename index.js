@@ -1,9 +1,7 @@
-const fs = require('fs')
 const express = require('express')
 const app = express()
 
 const twilio = require('twilio')
-const config = require('./config.json')
 
 const MessagingResponse = twilio.twiml.MessagingResponse
 
@@ -30,7 +28,7 @@ mongoConn.open().then((client) => {
 
  
 // Find your account sid and auth token in your Twilio account Console.
-let client = new twilio(config.TWILIO_ACCOUNT_SID, config.TWILIO_API_KEY)
+let client = new twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_API_KEY)
 
 const verifyNumber = (num) => {
     return !!num.match(/^\+1[\d]{10}?/)
@@ -54,7 +52,7 @@ const notify = (message, debug) => {
                 num = num.number;
                 client.messages.create({
                   to: num,
-                  from: config.TWILIO_NUMBER,
+                  from: process.env.TWILIO_NUMBER,
                   body: message
                 })
             });
