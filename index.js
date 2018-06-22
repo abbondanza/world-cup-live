@@ -118,11 +118,13 @@ app.get('/fetch', (req, res) => {
     fifaApi.getRecent().then((recentMatches) => {
         recentMatches.map((match) => {
             let action = '';
-            matches.getMatch(db, match.IdMatch).then((oldMatch) => {
-                if(!oldMatch && match.MatchStatus !== 3) {
-                    return;
-                }
+            
+            // If NOT live
+            if(match.MatchStatus !== 3) {
+                return;
+            }
                 
+            matches.getMatch(db, match.IdMatch).then((oldMatch) => {
                 action = notifHelper.getAction(match, oldMatch);
                 
                 if(!action) {
