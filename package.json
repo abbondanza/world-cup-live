@@ -1,12 +1,9 @@
 {
-  "name": "chat-example",
+  "name": "world-cup-live",
   "version": "0.0.0",
-  "description": "A chat example to showcase how to use `socket.io` with a static `express` server with `async` for control flow.",
+  "description": "World Cup goal and game info notifier",
   "main": "index.js",
-  "repository": "",
-  "scripts": {
-    "start": "node ./index"
-  },
+  "repository": "https://github.com/abbondanza/world-cup-live.git",
   "author": "Rafael Abbondanza <abbondanza.r@gmail.com",
   "dependencies": {
     "async": "~0.2.8",
@@ -19,5 +16,8 @@
   "devDependencies": {
     "cheerio": "^1.0.0-rc.2",
     "dotenv": "^6.0.0"
+  },
+  "engines" :{
+    "node": "8.9.0"
   }
 }
