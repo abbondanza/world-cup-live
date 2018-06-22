@@ -5,6 +5,9 @@
   "main": "index.js",
   "repository": "https://github.com/abbondanza/world-cup-live.git",
   "author": "Rafael Abbondanza <abbondanza.r@gmail.com",
+  "scripts": {
+    "start": "node ./index"
+  },
   "dependencies": {
     "async": "~0.2.8",
     "express": "^3.2.6",
