@@ -13,11 +13,7 @@ const notifications = require('./db/notifications');
 
 const fifaApi = require('./service/fifa');
 const notifHelper = require('./util/notif-helper');
-const logger = require('./util/logger');
-
 const mongoConn = require('./util/mongo-conn');
-
-// console.log(process.env.TWILIO_API_KEY)
 
 let mongoClient = null;
 let db = null;
@@ -120,7 +116,7 @@ app.post('/sms', (req, res) => {
 
 app.get('/fetch', (req, res) => {
     // some auth?
-    logger.log('fifa fetch');
+    console.log('fifa fetch');
     fifaApi.getRecent().then((recentMatches) => {
         recentMatches.map((match) => {
             let action = '';
@@ -133,21 +129,21 @@ app.get('/fetch', (req, res) => {
                 
                 if(!action) {
                     // nothings changed
-                    logger.log(`[${match.IdMatch}] NO UPDATES`);
+                    console.log(`[${match.IdMatch}] NO UPDATES`);
                     return;
                 }
                 
                 matches.addMatch(db, match).then(() => {
                     let msg = notifHelper.buildMsg(action, match);
                     if(!msg) {
-                        logger.log(`[${match.IdMatch}] UNHANDLED UPDATE ${action}`);
+                        console.log(`[${match.IdMatch}] UNHANDLED UPDATE ${action}`);
                         return;
                     }
                     
                     notify(msg).then(() => {
-                        logger.log(`[${match.IdMatch}] MESSAGE SENT ${action}`);
+                        console.log(`[${match.IdMatch}] MESSAGE SENT ${action}`);
                     }, () => {
-                        logger.log(`[${match.IdMatch}] MESSAGE NOT SENT ${action}`);
+                        console.log(`[${match.IdMatch}] MESSAGE NOT SENT ${action}`);
                     });
                     
                     notifications.addNotification(db, action, match.IdMatch);
@@ -157,7 +153,7 @@ app.get('/fetch', (req, res) => {
         // ehh - shouldn't be here
         return res.status(200).json({ message: `Done` });
     }).catch((err) => {
-        logger.log(err)
+        console.log(err)
         return res.status(500).json({ message: err })
     })
 })
