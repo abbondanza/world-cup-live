@@ -13,6 +13,7 @@ module.exports.buildMsg = (action, match) => {
     let awayTeamName = match.AwayTeam.TeamName[0].Description;
     
     const score = `${homeTeamName} ${match.HomeTeam.Score}x${match.AwayTeam.Score} ${awayTeamName}`;
+    const vs = `${homeTeamName} vs. ${awayTeamName}`;
     
     let msg = [];
     
@@ -24,16 +25,16 @@ module.exports.buildMsg = (action, match) => {
             msg = getGoalMsg(match.HomeTeam);
             break;
         case 'HALF_TIME':
-            msg =  [`Half-time`]
+            msg =  [`Half-Time`]
             break;
         case 'SECOND_HALF':
-            msg =  [`Second half started!`]
+            msg =  [`Start of Second Half`]
             break;
         case 'FULL_TIME':
-            msg =  [`Game over!`]
+            msg =  [`Final Whistle!`]
             break;
         case 'GAME_STARTED':
-            msg =  [`Game on!`]
+            msg =  [`The Match has Started!`]
             break;
         default:
             msg = null;
@@ -42,7 +43,11 @@ module.exports.buildMsg = (action, match) => {
     
     if(!msg)  return false;
     
-    msg.push(score);
+    if(action === 'GAME_STARTED') {
+        msg.push(vs);
+    } else {
+       msg.push(score);
+    }
     return msg.join('\n');
 }
 
