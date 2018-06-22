@@ -4,8 +4,9 @@ module.exports.addNumber = (db, number) => {
             { number: number },
             { $set: { number: number }},
             { upsert: true },
-            (err) => {
+            (err, r) => {
                 if(err) return reject(err);
+                if(r.upsertCount) return reject();
                 return resolve();
             }
         );
