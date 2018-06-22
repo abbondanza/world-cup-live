@@ -53,6 +53,10 @@ module.exports.getAction = (match, oldMatch) => {
         }
         return null;
     }
+    
+    if(oldMatch.MatchStatus !== 3 && match.MatchStatus === 3) {
+        return 'GAME_STARTED';
+    }
 
     if(oldMatch.HomeTeam.Score !== match.HomeTeam.Score) {
         return 'HOME_GOAL';
