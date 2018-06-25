@@ -6,7 +6,7 @@ module.exports.addNumber = (db, number) => {
             { upsert: true },
             (err, r) => {
                 if(err) return reject(err);
-                if(!r.upsertCount) return reject();
+                if(!r.upsertedCount) return reject();
                 return resolve();
             }
         );
