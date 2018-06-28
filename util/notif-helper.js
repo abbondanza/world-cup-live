@@ -16,7 +16,7 @@ const getGoalMsg = (team, opponent) => {
     
     
     let msgArr = [`GOOOALL!! ${teamName}!!`];
-    if(ownGoal) {
+    if(!ownGoal) {
         msgArr.push(`By ${player} (${goal.Minute})`);
     } else {
         msgArr.push(`Own goal by ${player} (${goal.Minute})`);
