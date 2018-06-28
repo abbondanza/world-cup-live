@@ -1,11 +1,28 @@
-const getGoalMsg = (team) => {
+const getGoalMsg = (team, opponent) => {
     let teamName = team.TeamName[0].Description;
     let goal = team.Goals[team.Goals.length - 1];
-    let player =  team.Players
-                    .filter((player) => player.IdPlayer === goal.IdPlayer)
-                    .map((player) => player.PlayerName[0].Description);
     
-    return [`GOOOALL!! ${teamName}!!`, `By ${player} (${goal.Minute})`];   
+    let scoringTeam = team;
+    let ownGoal = false;
+    if(goal.IdTeam !== team.IdTeam) {
+        ownGoal = true;
+        scoringTeam = opponent;
+    }
+    
+    let player =  scoringTeam.Players
+                    .filter((player) => player.IdPlayer === goal.IdPlayer)
+                    .map((player) => player.PlayerName[0].Description);  
+                    
+    
+    
+    let msgArr = [`GOOOALL!! ${teamName}!!`];
+    if(ownGoal) {
+        msgArr.push(`By ${player} (${goal.Minute})`);
+    } else {
+        msgArr.push(`Own goal by ${player} (${goal.Minute})`);
+    }
+    
+    return msgArr;
 }
 
 module.exports.buildMsg = (action, match) => {
@@ -19,10 +36,10 @@ module.exports.buildMsg = (action, match) => {
     
     switch(action) {
         case 'AWAY_GOAL':
-            msg = getGoalMsg(match.AwayTeam);
+            msg = getGoalMsg(match.AwayTeam, match.HomeTeam);
             break;
         case 'HOME_GOAL':
-            msg = getGoalMsg(match.HomeTeam);
+            msg = getGoalMsg(match.HomeTeam, match.AwayTeam);
             break;
         case 'HALF_TIME':
             msg =  [`Half-Time`]
@@ -30,8 +47,11 @@ module.exports.buildMsg = (action, match) => {
         case 'SECOND_HALF':
             msg =  [`Start of Second Half`]
             break;
-        case 'FULL_TIME':
+        case 'GAME_OVER':
             msg =  [`Final Whistle!`]
+            break;
+        case 'FULL_TIME':
+            msg =  [`Full-time`]
             break;
         case 'GAME_STARTED':
             msg =  [`The Match has Started!`]
@@ -62,6 +82,10 @@ module.exports.getAction = (match, oldMatch) => {
     if(oldMatch.MatchStatus !== 3 && match.MatchStatus === 3) {
         return 'GAME_STARTED';
     }
+    
+    if(oldMatch.MatchStatus !== 0 && match.MatchStatus === 0) {
+        return 'GAME_OVER';
+    }
 
     if(oldMatch.HomeTeam.Score !== match.HomeTeam.Score) {
         return 'HOME_GOAL';
@@ -71,17 +95,12 @@ module.exports.getAction = (match, oldMatch) => {
         return 'AWAY_GOAL';
     }
     
-    if(oldMatch.Period === 4 && match.Period !== 4) {
-        return 'SECOND_HALF';
-    }
-    
-    //matchData.Period === 10 || matchData.MatchStatus == 0
-    if(oldMatch.Period !== 10 && match.Period === 10) {
-        return 'FULL_TIME';
-    }
-    
     if(oldMatch.Period !== 4 && match.Period === 4) {
         return 'HALF_TIME';
+    }
+
+    if(oldMatch.Period === 4 && match.Period !== 4) {
+        return 'SECOND_HALF';
     }
     
     if(oldMatch.Period !== 6 && match.Period === 6) {
@@ -92,8 +111,16 @@ module.exports.getAction = (match, oldMatch) => {
         return 'EXTRA_HALF_TIME';
     }
     
+    if(oldMatch.Period === 8 && match.Period !== 8) {
+        return 'EXTRA_SECOND_HALF';
+    }
+    
     if(oldMatch.Period !== 11 && match.Period === 11) {
         return 'PENALTY_SHOOTOUT';
+    }
+
+    if(oldMatch.Period !== 10 && match.Period === 10) {
+        return 'FULL_TIME';
     }
 
     return null;

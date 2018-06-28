@@ -6,7 +6,8 @@
   "repository": "https://github.com/abbondanza/world-cup-live.git",
   "author": "Rafael Abbondanza <abbondanza.r@gmail.com",
   "scripts": {
-    "start": "node ./index"
+    "start": "node ./index",
+    "test": "mocha"
   },
   "dependencies": {
     "async": "~0.2.8",
@@ -18,9 +19,12 @@
   },
   "devDependencies": {
     "cheerio": "^1.0.0-rc.2",
-    "dotenv": "^6.0.0"
+    "clone": "^2.1.1",
+    "dotenv": "^6.0.0",
+    "expect": "^23.2.0",
+    "mocha": "^5.2.0"
   },
-  "engines" :{
+  "engines": {
     "node": "8.9.0"
   }
 }
