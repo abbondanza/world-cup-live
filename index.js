@@ -117,7 +117,7 @@ app.get('/fetch', (req, res) => {
     console.log('fifa fetch');
     fifaApi.getRecent().then((recentMatches) => {
         recentMatches.map((match) => {
-            let action = '';
+            let actions = [];
              
             matches.getMatch(db, match.IdMatch).then((oldMatch) => {
                 // if match is not in system and current match not live
@@ -125,28 +125,30 @@ app.get('/fetch', (req, res) => {
                     return;
                 }
     
-                action = notifHelper.getAction(match, oldMatch);
+                actions = notifHelper.getActions(match, oldMatch);
                 
-                if(!action) {
+                if(!actions.length) {
                     // nothings changed
                     console.log(`[${match.IdMatch}] NO UPDATES`);
                     return;
                 }
                 
                 matches.addMatch(db, match).then(() => {
-                    let msg = notifHelper.buildMsg(action, match);
-                    if(!msg) {
-                        console.log(`[${match.IdMatch}] UNHANDLED UPDATE ${action}`);
-                        return;
-                    }
-                    
-                    notify(msg).then(() => {
-                        console.log(`[${match.IdMatch}] MESSAGE SENT ${action}`);
-                    }, () => {
-                        console.log(`[${match.IdMatch}] MESSAGE NOT SENT ${action}`);
-                    });
-                    
-                    notifications.addNotification(db, action, match.IdMatch);
+                    actions.map((action) => {
+                        let msg = notifHelper.buildMsg(action, match);
+                        if(!msg) {
+                            console.log(`[${match.IdMatch}] UNHANDLED UPDATE ${action}`);
+                            return;
+                        }
+                        
+                        notify(msg).then(() => {
+                            console.log(`[${match.IdMatch}] MESSAGE SENT ${action}`);
+                        }, () => {
+                            console.log(`[${match.IdMatch}] MESSAGE NOT SENT ${action}`);
+                        });
+                        
+                        notifications.addNotification(db, action, match.IdMatch);  
+                    })
                 })
             })
         });

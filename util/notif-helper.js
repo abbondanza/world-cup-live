@@ -71,57 +71,55 @@ module.exports.buildMsg = (action, match) => {
     return msg.join('\n');
 }
 
-module.exports.getAction = (match, oldMatch) => {
+module.exports.getActions = (match, oldMatch) => {
+    let results = [];
     if(match && !oldMatch) {
         if(match.MatchStatus === 3) {
-            return 'GAME_STARTED';
+            results.push('GAME_STARTED');
         }
-        return null;
+        return results;
     }
     
-    if(oldMatch.MatchStatus !== 3 && match.MatchStatus === 3) {
-        return 'GAME_STARTED';
+    let gameOver = false;
+    if(oldMatch.MatchStatus !== match.MatchStatus) {
+        if(oldMatch.MatchStatus !== 3 && match.MatchStatus === 3) {
+            results.push('GAME_STARTED');
+        } else if(oldMatch.MatchStatus !== 0 && match.MatchStatus === 0) {
+            gameOver = true;
+            results.push('GAME_OVER');
+        } else {
+            results.push('UNHANDLED_STATUS');
+        }
     }
     
-    if(oldMatch.MatchStatus !== 0 && match.MatchStatus === 0) {
-        return 'GAME_OVER';
+    if(oldMatch.Period !== match.Period) {
+        if(oldMatch.Period !== 4 && match.Period === 4) {
+            results.push('HALF_TIME');
+        } else if(oldMatch.Period === 4 && match.Period !== 4) {
+            results.push('SECOND_HALF');
+        } else if(oldMatch.Period !== 6 && match.Period === 6) {
+            results.push('EXTRA_TIME');
+        } else if(oldMatch.Period !== 8 && match.Period === 8) {
+            results.push('EXTRA_HALF_TIME');
+        } else if(oldMatch.Period === 8 && match.Period !== 8) {
+            results.push('EXTRA_SECOND_HALF');
+        } else if(oldMatch.Period !== 11 && match.Period === 11) {
+            results.push('PENALTY_SHOOTOUT');
+        } else if(oldMatch.Period !== 10 && match.Period === 10 && !gameOver) {
+            results.push('FULL_TIME');
+        } else {
+            results.push('UNHANDLED_PERIOD');
+        }
+
     }
 
     if(oldMatch.HomeTeam.Score !== match.HomeTeam.Score) {
-        return 'HOME_GOAL';
+        results.push('HOME_GOAL');
     }
     
     if(oldMatch.AwayTeam.Score !== match.AwayTeam.Score) {
-        return 'AWAY_GOAL';
+        results.push('AWAY_GOAL');
     }
     
-    if(oldMatch.Period !== 4 && match.Period === 4) {
-        return 'HALF_TIME';
-    }
-
-    if(oldMatch.Period === 4 && match.Period !== 4) {
-        return 'SECOND_HALF';
-    }
-    
-    if(oldMatch.Period !== 6 && match.Period === 6) {
-        return 'EXTRA_TIME';
-    }
-    
-    if(oldMatch.Period !== 8 && match.Period === 8) {
-        return 'EXTRA_HALF_TIME';
-    }
-    
-    if(oldMatch.Period === 8 && match.Period !== 8) {
-        return 'EXTRA_SECOND_HALF';
-    }
-    
-    if(oldMatch.Period !== 11 && match.Period === 11) {
-        return 'PENALTY_SHOOTOUT';
-    }
-
-    if(oldMatch.Period !== 10 && match.Period === 10) {
-        return 'FULL_TIME';
-    }
-
-    return null;
+    return results;
 }
