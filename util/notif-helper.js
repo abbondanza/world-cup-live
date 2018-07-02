@@ -47,14 +47,26 @@ module.exports.buildMsg = (action, match) => {
         case 'SECOND_HALF':
             msg =  [`Start of Second Half`]
             break;
+        case 'EXTRA_TIME':
+            msg =  [`It's all even, so we're headed to extra time!`]
+            break;
+        case 'EXTRA_HALF_TIME':
+            msg =  [`End of first half of extra time!`]
+            break;
+        case 'EXTRA_SECOND_HALF':
+            msg =  [`Second half of extra time!`]
+            break;
+        case 'PENALTY_SHOOTOUT':
+            msg =  [`We're going to penalties!!`]
+            break;
         case 'GAME_OVER':
-            msg =  [`Final Whistle!`]
+            msg =  [`It's all over!`]
             break;
         case 'FULL_TIME':
             msg =  [`Full-time`]
             break;
         case 'GAME_STARTED':
-            msg =  [`The Match has Started!`]
+            msg =  [`The match has started!`]
             break;
         default:
             msg = null;
@@ -65,8 +77,18 @@ module.exports.buildMsg = (action, match) => {
     
     if(action === 'GAME_STARTED') {
         msg.push(vs);
+    } else if(action === 'GAME_OVER') {
+        msg.push(score);
+        if(match.AwayTeamPenaltyScore || match.HomeTeamPenaltyScore) {
+            let teamName = awayTeamName;
+            if(match.HomeTeamPenaltyScore > match.AwayTeamPenaltyScore) {
+                teamName = homeTeamName;
+            }
+            msg.push(`Penalties: ${homeTeamName} ${match.HomeTeamPenaltyScore}x${match.AwayTeam.Score} ${match.AwayTeamPenaltyScore}`);
+            msg.push(`${teamName} is going to the next round!!`);
+        }
     } else {
-       msg.push(score);
+        msg.push(score);
     }
     return msg.join('\n');
 }
