@@ -159,5 +159,3 @@ app.get('/fetch', (req, res) => {
         return res.status(500).json({ message: err })
     })
 })
-
-app.route('api/stats')
