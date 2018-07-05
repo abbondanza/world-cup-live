@@ -84,8 +84,8 @@ module.exports.buildMsg = (action, match) => {
             if(match.HomeTeamPenaltyScore > match.AwayTeamPenaltyScore) {
                 teamName = homeTeamName;
             }
-            msg.push(`Penalties: ${homeTeamName} ${match.HomeTeamPenaltyScore}x${match.AwayTeam.Score} ${match.AwayTeamPenaltyScore}`);
-            msg.push(`${teamName} is going to the next round!!`);
+            msg.push(`Penalties: ${homeTeamName} ${match.HomeTeamPenaltyScore}x${match.AwayTeamPenaltyScore} ${awayTeamName}`);
+            msg.push(`${teamName} wins!!`);
         }
     } else {
         msg.push(score);
